@@ -7,7 +7,9 @@
       "config": {
         "maxLambdaSize": "50mb",
         "runtime": "python3.9",
-        "buildCommand": "sh ./build_vercel.sh"
+        "buildCommand": "sh ./build_vercel.sh",
+        "maxDuration": 60,
+        "memory": 1024
       }
     }
   ],
@@ -37,14 +39,5 @@
     "PYTHONUNBUFFERED": "1",
     "VERCEL": "1",
     "FLASK_ENV": "production"
-  },
-  "functions": {
-    "api/**/*.py": {
-      "maxDuration": 60
-    },
-    "wsgi.py": {
-      "memory": 1024,
-      "maxDuration": 60
-    }
   }
 }
