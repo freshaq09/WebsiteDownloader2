@@ -1,0 +1,39 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Temporary files and directories
+temp/
+wget_temp/
+*.zip
+
+# Logging
+*.log
+
+# Test files
+test_*.py
+
+# Development files
+direct_test.py
+quick_download.py
+serve_download.py
+download_server.py
+direct_download.py
+simple_crawl.py
+test_direct_crawl.py
+test_crawler.py
+
+# Environment
+.env
+.env.local
+.venv
+env/
+venv/
+ENV/
+
+# Local caches
+.cache/
+.pythonlibs/
+.local/
+.upm/

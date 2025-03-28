@@ -75,7 +75,11 @@ def require_api_key(f):
     return decorated_function
 
 # Create a directory for temporary storage if it doesn't exist
-temp_dir = Path("temp")
+# For Vercel compatibility, use /tmp for serverless functions
+if os.environ.get('VERCEL'):
+    temp_dir = Path("/tmp/app_temp")
+else:
+    temp_dir = Path("temp")
 temp_dir.mkdir(exist_ok=True)
 
 # Store active crawling tasks
