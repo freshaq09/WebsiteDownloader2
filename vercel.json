@@ -5,7 +5,7 @@
       "src": "wsgi.py",
       "use": "@vercel/python",
       "config": {
-        "maxLambdaSize": "15mb",
+        "maxLambdaSize": "50mb",
         "runtime": "python3.9",
         "buildCommand": "sh ./build_vercel.sh"
       }
@@ -13,12 +13,38 @@
   ],
   "routes": [
     {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/templates/(.*)",
+      "dest": "/templates/$1"
+    },
+    {
+      "src": "/(.*\\.zip)",
+      "dest": "/tmp/$1",
+      "headers": {
+        "Content-Type": "application/zip",
+        "Content-Disposition": "attachment"
+      }
+    },
+    {
       "src": "/(.*)",
-      "dest": "wsgi.py"
+      "dest": "/wsgi.py"
     }
   ],
   "env": {
     "PYTHONUNBUFFERED": "1",
-    "VERCEL": "1"
+    "VERCEL": "1",
+    "FLASK_ENV": "production"
+  },
+  "functions": {
+    "api/**/*.py": {
+      "maxDuration": 60
+    },
+    "wsgi.py": {
+      "memory": 1024,
+      "maxDuration": 60
+    }
   }
 }

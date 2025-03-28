@@ -9,6 +9,9 @@ import zipfile
 import shutil
 from pathlib import Path
 
+# Check if running in Vercel
+VERCEL_ENV = os.environ.get('VERCEL') == '1'
+
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -119,7 +122,14 @@ def crawl_with_wget(url, task_id, output_dir):
         # Create ZIP file
         timestamp = int(time.time())
         zip_filename = f"{domain.replace('.', '_')}_{timestamp}.zip"
-        zip_path = str(output_dir.parent / zip_filename)
+        
+        # For Vercel, we need to store ZIP files in the /tmp directory
+        if VERCEL_ENV:
+            zip_path = str(Path("/tmp") / zip_filename)
+            logger.info(f"Using Vercel-compatible ZIP path: {zip_path}")
+        else:
+            zip_path = str(output_dir.parent / zip_filename)
+            logger.info(f"Using standard ZIP path: {zip_path}")
         
         logger.info(f"Creating ZIP file at {zip_path}")
         with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:

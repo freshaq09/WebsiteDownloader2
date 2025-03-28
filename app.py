@@ -12,6 +12,7 @@ import threading
 import queue
 import secrets
 from functools import wraps
+import sys
 
 import requests
 from bs4 import BeautifulSoup
@@ -38,7 +39,12 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 
 # Initialize extensions
 db.init_app(app)
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+# Configure SocketIO based on environment
+if os.environ.get('VERCEL'):
+    # Use a more Vercel-friendly async mode
+    socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet', message_queue=os.environ.get('REDIS_URL'))
+else:
+    socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 login_manager.login_message = 'Please log in to access this page.'

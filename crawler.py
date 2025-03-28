@@ -18,6 +18,9 @@ import random
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
+
+# Configure for serverless environment
+VERCEL_ENV = os.environ.get('VERCEL') == '1'
 logger = logging.getLogger(__name__)
 
 class WebCrawler:
@@ -32,8 +35,12 @@ class WebCrawler:
         self.base_domain = self.parsed_url.netloc
         self.base_url = f"{self.parsed_url.scheme}://{self.base_domain}"
         
-        # Create task directory
-        self.task_dir = Path(f"temp/{self.task_id}")
+        # Create task directory - handle Vercel serverless environment
+        if VERCEL_ENV:
+            self.task_dir = Path(f"/tmp/app_temp/{self.task_id}")
+        else:
+            self.task_dir = Path(f"temp/{self.task_id}")
+            
         self.task_dir.mkdir(parents=True, exist_ok=True)
         
         # Set up tracking variables
@@ -567,7 +574,12 @@ class WebCrawler:
         """Create a ZIP file of the crawled content."""
         domain_name = self.base_domain.replace('.', '_')
         zip_filename = f"{domain_name}_{int(time.time())}.zip"
-        self.zip_path = os.path.join("temp", zip_filename)
+        
+        # Handle Vercel serverless environment
+        if VERCEL_ENV:
+            self.zip_path = os.path.join("/tmp/app_temp", zip_filename)
+        else:
+            self.zip_path = os.path.join("temp", zip_filename)
         
         # Make sure any previously existing file with the same name is removed
         if os.path.exists(self.zip_path):
